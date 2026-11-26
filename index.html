@@ -26,6 +26,9 @@
   --tf: #7A4CC2;
   --ideal: #B3262E;
   --team: #D2691E;
+  --team-strong: #A94E0E;
+  --team-ink: #FFFFFF;
+  --team-soft: #FDF0E4;
   --band: #F3F5F8;
   --font-display: "LXGW WenKai TC", "Kaiti TC", "KaiTi", "Noto Serif TC", serif;
   --font-body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
@@ -37,6 +40,7 @@
     --accent: #8C9BFF; --accent-ink: #0F131B; --accent-soft: #232C4A;
     --pn: #F0786E; --pp: #EDB54C; --pf: #A6AEC2; --ph: #F27BAF; --fu: #4ECDBF; --tf: #B795F5;
     --ideal: #F06A6A; --team: #F5A35C; --band: #1C2433;
+    --team-strong: #F5A35C; --team-ink: #1A1208; --team-soft: #2E2318;
     color-scheme: dark;
   }
 }
@@ -45,6 +49,7 @@
   --accent: #8C9BFF; --accent-ink: #0F131B; --accent-soft: #232C4A;
   --pn: #F0786E; --pp: #EDB54C; --pf: #A6AEC2; --ph: #F27BAF; --fu: #4ECDBF; --tf: #B795F5;
   --ideal: #F06A6A; --team: #F5A35C; --band: #1C2433;
+    --team-strong: #F5A35C; --team-ink: #1A1208; --team-soft: #2E2318;
   color-scheme: dark;
 }
 [hidden] { display: none !important; }
@@ -142,8 +147,23 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 }
 .text-input:focus-visible { outline: 3px solid var(--accent); outline-offset: 1px; }
 .err { color: var(--pn); font-size: 13px; min-height: 1em; }
-.submit-box { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px; display: grid; gap: 12px; }
+.submit-box { background: var(--team-soft); border: 1.5px solid var(--team); border-left-width: 6px; border-radius: 16px; padding: 18px 18px 18px 16px; display: grid; gap: 12px; }
+.submit-box h3 { color: var(--team-strong); display: flex; align-items: center; gap: 8px; }
+.submit-box h3::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--team); flex: none; }
+.submit-box.sent h3::before { content: "✓"; width: 22px; height: 22px; display: grid; place-items: center; font-size: 13px; color: var(--team-ink); }
+.submit-box .note { color: var(--ink); opacity: .8; }
+.submit-box .btn.primary { background: var(--team-strong); border-color: var(--team-strong); color: var(--team-ink); }
+.submit-box .btn:not(.primary) { background: transparent; border-color: var(--team); }
+@media (hover: hover) { .submit-box .btn:hover { border-color: var(--team-strong); } }
+.submit-box .btn:focus-visible, .submit-box .text-input:focus-visible { outline-color: var(--team-strong); }
+#result-chart-top { scroll-margin-top: 16px; }
+.scroll-cue { justify-self: center; display: inline-flex; flex-direction: column; align-items: center; gap: 2px; background: none; border: 0; color: var(--muted); font: inherit; font-size: 14px; cursor: pointer; padding: 6px 12px; border-radius: 10px; }
+@media (hover: hover) { .scroll-cue:hover { color: var(--accent); } }
+.scroll-cue .arrow { font-size: 20px; line-height: 1; animation: cue-bob 1.6s ease-in-out infinite; }
+@keyframes cue-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
+@media (prefers-reduced-motion: reduce) { .scroll-cue .arrow { animation: none; } }
 .submit-box .field { max-width: 280px; }
+.submit-box.sent .only-form, .submit-box:not(.sent) .only-sent { display: none; }
 .legend { display: flex; flex-wrap: wrap; gap: 6px 22px; justify-content: center; font-size: 13px; color: var(--muted); padding-top: 8px; }
 .legend > span { display: inline-flex; align-items: center; gap: 4px; }
 .legend .sw { width: 22px; height: 0; border-top: 2.5px solid var(--accent); }
@@ -292,19 +312,21 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
       <p class="lede" id="r-summary"></p>
     </div>
     <div class="submit-box" id="submit-box" hidden>
-      <h3>送出到團隊統計</h3>
-      <p class="note">只會送出 6 個向度的平均分數和你的名稱，不會送出每一題的答案。同一個瀏覽器重新送出，會取代你上次的結果。</p>
-      <div class="field">
+      <h3 id="submit-title">送出到團隊統計</h3>
+      <p class="note only-form">只會送出 6 個向度的平均分數和你的名稱，不會送出每一題的答案。同一個瀏覽器重新送出，會取代你上次的結果。</p>
+      <div class="field only-form">
         <label for="name-result">名稱</label>
         <input class="text-input" id="name-result" type="text" maxlength="20" autocomplete="nickname">
       </div>
-      <div class="row">
-        <button class="btn primary" id="btn-submit" type="button">送出到團隊統計</button>
-        <button class="btn" id="btn-team" type="button">查看團隊統計</button>
-      </div>
       <p class="note" id="submit-status" aria-live="polite"></p>
+      <div class="row">
+        <button class="btn primary only-form" id="btn-submit" type="button">送出到團隊統計</button>
+        <button class="btn" id="btn-team" type="button">查看團隊統計</button>
+        <button class="btn only-sent" id="btn-resend" type="button">修改名稱或重新送出</button>
+      </div>
     </div>
-    <label class="switch" for="toggle-ideal">
+    <button class="scroll-cue" id="btn-scroll-result" type="button" hidden>往下滑看你的結果<span class="arrow" aria-hidden="true">↓</span></button>
+    <label class="switch" id="result-chart-top" for="toggle-ideal">
       <input type="checkbox" class="toggle-ideal" id="toggle-ideal">
       <span class="knob" aria-hidden="true"></span>
       <span>顯示作者理想時間觀的比較</span>
@@ -949,12 +971,19 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   // ===== 送出到團隊統計 =====
   function renderSubmit(message) {
     $("submit-box").hidden = !TEAM_ON;
+    $("btn-scroll-result").hidden = !TEAM_ON;
     if (!TEAM_ON) return;
     if (document.activeElement !== $("name-result")) $("name-result").value = getName();
     const sent = Number(lsGet(SENT_KEY));
+    const done = sent && !submitEditing;
+    $("submit-box").classList.toggle("sent", !!done);
+    $("submit-title").textContent = done ? "已送出到團隊統計" : "送出到團隊統計";
+    $("btn-team").classList.toggle("primary", !!done);
     $("btn-submit").textContent = sent ? "重新送出（會取代上次的結果）" : "送出到團隊統計";
-    $("submit-status").textContent = message || (sent ? `這個瀏覽器已於 ${fmtTime(sent)} 送出過。` : "");
+    $("submit-status").textContent = message || (done ? `已於 ${fmtTime(sent)} 以「${getName()}」送出。` : sent ? `這個瀏覽器已於 ${fmtTime(sent)} 送出過。` : "");
   }
+  var submitEditing = false; // var：renderSubmit 可能在這行執行前被呼叫
+  $("btn-resend").onclick = () => { submitEditing = true; renderSubmit(); $("name-result").focus(); };
   $("btn-submit").onclick = async () => {
     const name = setName($("name-result").value);
     $("name-result").value = name;
@@ -971,12 +1000,17 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
       const j = await r.json();
       if (!j || !j.ok) throw new Error((j && j.error) || "伺服器沒有接受這筆資料");
       lsSet(SENT_KEY, String(Date.now()));
+      submitEditing = false;
       renderSubmit(`已送出，目前團隊共 ${j.count} 人。`);
     } catch (e) {
       renderSubmit(`送出失敗：${e.message || "網路錯誤"}。請檢查網路後再按一次。`);
     } finally { btn.disabled = false; }
   };
   $("btn-team").onclick = () => show("team");
+  $("btn-scroll-result").onclick = () => {
+    const smooth = !matchMedia("(prefers-reduced-motion: reduce)").matches;
+    $("result-chart-top").scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "start" });
+  };
 
   // ===== 團隊統計 =====
   let teamData = null, teamSeq = 0;
