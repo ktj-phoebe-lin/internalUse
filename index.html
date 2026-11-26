@@ -56,6 +56,8 @@
 :root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
 * { box-sizing: border-box; }
 html, body { background: var(--bg); color: var(--ink); }
+/* iPhone：關掉「點兩下放大」（連點答案時會誤觸），仍保留兩指縮放 */
+html { touch-action: manipulation; }
 body {
   margin: 0;
   font-family: var(--font-body);
