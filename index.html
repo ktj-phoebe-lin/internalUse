@@ -1,0 +1,1073 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ZTPI 時間觀測驗</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: one centered column that moves through three views — intro (a timeline of the six lenses), one question at a time, then a radar + bar profile. */
+:root {
+  --bg: #EEF1F5;
+  --surface: #FFFFFF;
+  --ink: #1A2233;
+  --muted: #5B6578;
+  --line: #D6DCE5;
+  --accent: #3446C8;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #E3E7FB;
+  --pn: #C0423A;
+  --pp: #B87B0C;
+  --pf: #67708A;
+  --ph: #C93D7A;
+  --fu: #17857B;
+  --tf: #7A4CC2;
+  --ideal: #B3262E;
+  --team: #D2691E;
+  --band: #F3F5F8;
+  --font-display: "LXGW WenKai TC", "Kaiti TC", "KaiTi", "Noto Serif TC", serif;
+  --font-body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --font-num: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0F131B; --surface: #171E2B; --ink: #E6EAF2; --muted: #9AA3B5; --line: #2A3346;
+    --accent: #8C9BFF; --accent-ink: #0F131B; --accent-soft: #232C4A;
+    --pn: #F0786E; --pp: #EDB54C; --pf: #A6AEC2; --ph: #F27BAF; --fu: #4ECDBF; --tf: #B795F5;
+    --ideal: #F06A6A; --team: #F5A35C; --band: #1C2433;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0F131B; --surface: #171E2B; --ink: #E6EAF2; --muted: #9AA3B5; --line: #2A3346;
+  --accent: #8C9BFF; --accent-ink: #0F131B; --accent-soft: #232C4A;
+  --pn: #F0786E; --pp: #EDB54C; --pf: #A6AEC2; --ph: #F27BAF; --fu: #4ECDBF; --tf: #B795F5;
+  --ideal: #F06A6A; --team: #F5A35C; --band: #1C2433;
+  color-scheme: dark;
+}
+[hidden] { display: none !important; }
+:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+* { box-sizing: border-box; }
+html, body { background: var(--bg); color: var(--ink); }
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.7;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 32px 56px;
+}
+main { max-width: 720px; margin: 0 auto; display: grid; gap: 28px; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 700; text-wrap: balance; margin: 0; line-height: 1.3; }
+h1 { font-size: clamp(30px, 6vw, 44px); }
+h2 { font-size: clamp(22px, 4vw, 28px); }
+h3 { font-size: 18px; }
+p { margin: 0; }
+.eyebrow { font-size: 13px; letter-spacing: .12em; color: var(--muted); font-weight: 500; }
+.lede { color: var(--muted); max-width: 62ch; }
+.num { font-family: var(--font-num); font-variant-numeric: tabular-nums; }
+
+button { font: inherit; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.btn {
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+  padding: 10px 18px; border-radius: 10px; font-weight: 500;
+}
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+.row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+
+/* Intro timeline */
+.timeline { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border-top: 2px solid var(--ink); }
+.zone { padding: 12px 12px 0 0; display: grid; gap: 10px; align-content: start; position: relative; }
+.zone::before { content: ""; position: absolute; top: -7px; left: 0; width: 12px; height: 12px; border-radius: 50%; background: var(--ink); }
+.zone-label { font-family: var(--font-display); font-size: 20px; padding-top: 8px; }
+.lens { display: grid; grid-template-columns: 10px minmax(0,1fr); gap: 8px; align-items: baseline; font-size: 14px; }
+.lens i { width: 10px; height: 10px; border-radius: 2px; display: block; transform: translateY(1px); }
+.lens b { font-weight: 700; }
+.lens span { color: var(--muted); display: block; font-size: 13px; line-height: 1.5; }
+.facts { display: flex; flex-wrap: wrap; gap: 8px 20px; color: var(--muted); font-size: 14px; }
+.facts strong { color: var(--ink); font-family: var(--font-num); font-weight: 500; }
+.note { font-size: 13px; color: var(--muted); }
+
+/* Quiz */
+.progress { display: grid; gap: 8px; }
+.progress-meta { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; color: var(--muted); }
+.bar { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
+.bar > div { height: 100%; background: var(--accent); width: 0; transition: width .25s ease; }
+.qcard { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 28px 24px; display: grid; gap: 24px; }
+.qnum { font-family: var(--font-num); color: var(--accent); font-size: 14px; }
+.qtext { font-family: var(--font-display); font-size: clamp(21px, 4.2vw, 26px); line-height: 1.5; min-height: 3em; }
+.scale { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.opt {
+  border: 1px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 12px;
+  padding: 12px 4px; display: grid; gap: 2px; justify-items: center; text-align: center;
+}
+.opt .n { font-family: var(--font-num); font-size: 20px; }
+.opt .t { font-size: 12px; color: var(--muted); line-height: 1.3; }
+.opt { -webkit-tap-highlight-color: transparent; }
+/* 只有滑鼠裝置才有 hover 樣式；自動跳題後，要等滑鼠再移動才恢復，避免新題目同位置看起來像已選 */
+@media (hover: hover) { .scale:not(.fresh) .opt:hover { border-color: var(--accent); } }
+.opt[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.opt[aria-pressed="true"] .t { color: var(--accent-ink); }
+.scale-ends { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-top: -16px; }
+.qnav { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.part-banner { background: var(--accent-soft); border-radius: 12px; padding: 14px 16px; font-size: 14px; display: grid; gap: 4px; }
+.part-banner b { font-family: var(--font-display); font-size: 17px; }
+
+/* Result */
+.result-head { display: grid; gap: 10px; }
+.chart-wrap { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px; overflow-x: auto; }
+.chart-wrap { padding: 12px 8px 16px; }
+.chart-scroll { overflow-x: auto; }
+.chart-wrap svg { display: block; width: 100%; min-width: 600px; height: auto; margin: 0 auto; }
+/* 手機（窄螢幕）改用直式計分表 */
+.chart-wrap .profile-m { display: none; min-width: 0; max-width: 420px; }
+@media (max-width: 600px) {
+  .chart-scroll { display: none; }
+  .chart-wrap .profile-m { display: block; }
+}
+.legend .dot.team { background: var(--team); }
+.legend .sw.team { border-top-color: var(--team); }
+/* 名稱與團隊送出 */
+.field { display: grid; gap: 6px; max-width: 360px; }
+.field label { font-weight: 700; font-size: 15px; }
+.text-input {
+  font: inherit; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px;
+  background: var(--surface); color: var(--ink); width: 100%;
+}
+.text-input:focus-visible { outline: 3px solid var(--accent); outline-offset: 1px; }
+.err { color: var(--pn); font-size: 13px; min-height: 1em; }
+.submit-box { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px; display: grid; gap: 12px; }
+.submit-box .field { max-width: 280px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 22px; justify-content: center; font-size: 13px; color: var(--muted); padding-top: 8px; }
+.legend > span { display: inline-flex; align-items: center; gap: 4px; }
+.legend .sw { width: 22px; height: 0; border-top: 2.5px solid var(--accent); }
+.legend .sw.dash { border-top: 2px dotted var(--ideal); }
+.legend .dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+.legend .dot.you { background: var(--accent); }
+.legend .dot.ideal { background: var(--ideal); }
+.switch { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; font-size: 15px; justify-self: start; user-select: none; }
+.switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.switch .knob { position: relative; width: 42px; height: 24px; border-radius: 12px; background: var(--line); transition: background .2s; flex: none; }
+.switch .knob::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: var(--surface); box-shadow: 0 1px 2px rgba(0,0,0,.25); transition: transform .2s; }
+.switch input:checked + .knob { background: var(--ideal); }
+.switch input:checked + .knob::after { transform: translateX(18px); }
+.switch input:focus-visible + .knob { outline: 3px solid var(--accent); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .switch .knob, .switch .knob::after { transition: none; } }
+/* 檢視作答列表 */
+.rv-list { display: grid; gap: 8px; }
+.rv-part { font-size: 18px; padding-top: 12px; }
+.rv-part:first-child { padding-top: 0; }
+.rv-row {
+  display: grid; grid-template-columns: 2.2em minmax(0, 1fr) auto; gap: 12px; align-items: center;
+  text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+  padding: 10px 14px; color: var(--ink); line-height: 1.55; -webkit-tap-highlight-color: transparent;
+}
+@media (hover: hover) { .rv-row:hover { border-color: var(--accent); } }
+.rv-no { font-family: var(--font-num); color: var(--muted); font-size: 13px; }
+.rv-text { min-width: 0; }
+.rv-ans { display: grid; justify-items: center; min-width: 4.6em; }
+.rv-ans b { font-family: var(--font-num); font-size: 18px; font-weight: 500; color: var(--accent); line-height: 1.3; }
+.rv-ans span { font-size: 11px; color: var(--muted); white-space: nowrap; }
+.rv-row.empty { border-style: dashed; }
+.rv-row.empty .rv-ans b { color: var(--muted); }
+.pct-row { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: 13px; color: var(--muted); }
+.pct-row b { color: var(--ink); font-family: var(--font-num); font-weight: 500; }
+.dims { display: grid; gap: 14px; }
+.dim { display: grid; gap: 6px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+.dim:last-child { border-bottom: 0; }
+.dim-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.dim-name { display: flex; align-items: center; gap: 8px; font-weight: 700; }
+.dim-name i { width: 10px; height: 10px; border-radius: 2px; display: block; }
+.dim-score { font-family: var(--font-num); font-size: 20px; }
+.track { position: relative; height: 10px; background: var(--line); border-radius: 5px; }
+.track .fill { position: absolute; inset: 0 auto 0 0; border-radius: 5px; }
+.track .ideal { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--ink); }
+.ticks { display: flex; justify-content: space-between; font-family: var(--font-num); font-size: 11px; color: var(--muted); }
+.dim-desc { font-size: 14px; color: var(--muted); }
+.dim-gap { font-size: 13px; }
+.top-pill { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-weight: 500; margin-left: 6px; }
+.copy-status { font-size: 13px; color: var(--muted); }
+#copy-fallback { width: 100%; min-height: 160px; font: 13px/1.6 var(--font-num); background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
+
+@media (max-width: 520px) {
+  .timeline { grid-template-columns: minmax(0,1fr); border-top: 0; border-left: 2px solid var(--ink); }
+  .zone { padding: 0 0 16px 18px; }
+  .zone::before { top: 12px; left: -7px; }
+  .zone-label { padding-top: 0; }
+  .qcard { padding: 22px 16px; }
+  .opt .t { font-size: 11px; }
+}
+@media (prefers-reduced-motion: reduce) { .bar > div { transition: none; } }
+</style>
+</head>
+<body>
+
+<main>
+  <section id="view-intro" class="intro" style="display:grid;gap:28px">
+    <div style="display:grid;gap:14px">
+      <p class="eyebrow">ZTPI 津巴多時間觀量表 · 出自《時間悖論》</p>
+      <h1>你活在哪一段時間裡？</h1>
+      <p class="lede">社會心理學家 Philip Zimbardo 與 John Boyd 長期研究人們看待時間的方式，發展出這份時間觀量表。每個人都同時帶著過去、現在與未來的眼光，只是比重不同。作答後你會看到自己在六個時間觀向度上的分布。</p>
+    </div>
+
+    <div class="timeline" aria-label="六種時間觀">
+      <div class="zone">
+        <div class="zone-label">過去</div>
+        <div class="lens"><i style="background:var(--pn)"></i><div><b>過去負面</b><span>常回想遺憾與傷痛</span></div></div>
+        <div class="lens"><i style="background:var(--pp)"></i><div><b>過去正面</b><span>懷舊、珍惜回憶與傳統</span></div></div>
+      </div>
+      <div class="zone">
+        <div class="zone-label">現在</div>
+        <div class="lens"><i style="background:var(--pf)"></i><div><b>現在宿命</b><span>覺得人生由命運決定</span></div></div>
+        <div class="lens"><i style="background:var(--ph)"></i><div><b>現在享樂</b><span>活在當下、追求樂趣</span></div></div>
+      </div>
+      <div class="zone">
+        <div class="zone-label">未來</div>
+        <div class="lens"><i style="background:var(--fu)"></i><div><b>未來</b><span>重視目標與規劃</span></div></div>
+        <div class="lens"><i style="background:var(--tf)"></i><div><b>超驗未來</b><span>相信肉體死亡後仍有未來</span></div></div>
+      </div>
+    </div>
+
+    <div class="facts">
+      <span>共 <strong>66</strong> 題（兩部分：<strong>56</strong> + <strong>10</strong>）</span>
+      <span>約 <strong>10</strong> 分鐘</span>
+      <span>每題 <strong>1–5</strong> 分，從「完全不是」到「完全是」</span>
+    </div>
+    <p class="note">讀完每一題，問自己「我確實是這樣嗎？」再誠實作答。沒有標準答案。作答進度和結果只暫存在你自己的瀏覽器裡，1 小時沒有操作就會自動清除。</p>
+    <div class="field">
+      <label for="name-input">你的名稱</label>
+      <input class="text-input" id="name-input" type="text" maxlength="20" autocomplete="nickname" placeholder="例如：王小明">
+      <span class="err" id="name-error" aria-live="polite"></span>
+      <span class="note" id="name-note">名稱會跟分數一起送到團隊統計的試算表。團隊統計頁只顯示平均和人數，不會顯示名字。</span>
+    </div>
+    <div class="row" id="intro-actions"></div>
+  </section>
+
+  <section id="view-quiz" hidden style="display:grid;gap:20px">
+    <div class="progress">
+      <div class="progress-meta"><span id="q-part"></span><span class="num" id="q-count"></span></div>
+      <div class="bar"><div id="q-bar"></div></div>
+    </div>
+    <div class="part-banner" id="part-banner" hidden>
+      <b>第二部分：超驗未來型時間觀</b>
+      <span>接下來 10 題關於你對生命、死亡與信念的看法，作答方式相同。</span>
+    </div>
+    <div class="qcard">
+      <div class="qnum" id="q-num"></div>
+      <div class="qtext" id="q-text"></div>
+      <div class="scale" id="q-scale" role="group" aria-label="作答分數"></div>
+      <div class="scale-ends"><span>完全不是</span><span>完全是</span></div>
+    </div>
+    <div class="qnav">
+      <button class="btn" id="btn-prev" type="button">上一題</button>
+      <div class="row">
+        <button class="btn" id="btn-home" type="button">回到說明</button>
+        <button class="btn primary" id="btn-next" type="button">下一題</button>
+      </div>
+    </div>
+    <p class="note">鍵盤可直接按 1–5 作答，← → 切換題目。</p>
+  </section>
+
+  <section id="view-result" hidden style="display:grid;gap:24px">
+    <div class="result-head">
+      <p class="eyebrow">你的時間觀側寫</p>
+      <h2 id="r-title"></h2>
+      <p class="lede" id="r-summary"></p>
+    </div>
+    <label class="switch" for="toggle-ideal">
+      <input type="checkbox" class="toggle-ideal" id="toggle-ideal">
+      <span class="knob" aria-hidden="true"></span>
+      <span>顯示作者理想時間觀的比較</span>
+    </label>
+    <div class="chart-wrap">
+      <div class="chart-scroll">
+        <svg id="profile" viewBox="0 0 800 700" role="img" aria-label="時間觀側寫計分表：六個向度的分數與百分位"></svg>
+      </div>
+      <svg id="profile-m" class="profile-m" viewBox="0 0 360 560" role="img" aria-label="時間觀側寫計分表（直式）：六個向度的分數與百分位"></svg>
+      <div class="legend">
+        <span><span class="dot you"></span><span class="sw"></span>你的時間觀</span>
+        <span class="legend-ideal"><span class="dot ideal"></span><span class="sw dash"></span>作者理想時間觀</span>
+      </div>
+    </div>
+    <div class="dims" id="r-dims"></div>
+    <div class="submit-box" id="submit-box" hidden>
+      <h3>送出到團隊統計</h3>
+      <p class="note">只會送出 6 個向度的平均分數和你的名稱，不會送出每一題的答案。同一個瀏覽器重新送出，會取代你上次的結果。</p>
+      <div class="field">
+        <label for="name-result">名稱</label>
+        <input class="text-input" id="name-result" type="text" maxlength="20" autocomplete="nickname">
+      </div>
+      <div class="row">
+        <button class="btn primary" id="btn-submit" type="button">送出到團隊統計</button>
+        <button class="btn" id="btn-team" type="button">查看團隊統計</button>
+      </div>
+      <p class="note" id="submit-status" aria-live="polite"></p>
+    </div>
+    <div class="row">
+      <button class="btn primary" id="btn-download" type="button">下載結果圖</button>
+      <button class="btn" id="btn-copy" type="button">複製結果文字</button>
+      <button class="btn" id="btn-review" type="button">檢視我的作答</button>
+      <button class="btn" id="btn-restart" type="button">重新作答</button>
+      <button class="btn" id="btn-result-home" type="button">回到開始頁</button>
+      <span class="copy-status" id="copy-status" aria-live="polite"></span>
+    </div>
+    <textarea id="copy-fallback" hidden readonly></textarea>
+  </section>
+
+  <section id="view-review" hidden style="display:grid;gap:20px">
+    <div class="result-head">
+      <p class="eyebrow">檢視作答</p>
+      <h2>我的作答</h2>
+      <p class="lede">點任一題可以修改答案，改完會回到這個列表。</p>
+    </div>
+    <div class="row">
+      <button class="btn primary" type="button" data-rv="result">查看結果</button>
+      <button class="btn" type="button" data-rv="home">回到開始頁</button>
+    </div>
+    <div class="rv-list" id="rv-list"></div>
+    <div class="row">
+      <button class="btn primary" type="button" data-rv="result">查看結果</button>
+      <button class="btn" type="button" data-rv="home">回到開始頁</button>
+    </div>
+  </section>
+
+  <section id="view-team" hidden style="display:grid;gap:24px">
+    <div class="result-head">
+      <p class="eyebrow">團隊統計</p>
+      <h2>團隊時間觀側寫</h2>
+      <p class="lede" id="t-summary">載入中…</p>
+    </div>
+    <div id="t-body" style="display:grid;gap:24px" hidden>
+      <label class="switch" for="toggle-ideal-t">
+        <input type="checkbox" class="toggle-ideal" id="toggle-ideal-t">
+        <span class="knob" aria-hidden="true"></span>
+        <span>顯示作者理想時間觀的比較</span>
+      </label>
+      <div class="chart-wrap">
+        <div class="chart-scroll">
+          <svg id="t-profile" viewBox="0 0 800 700" role="img" aria-label="團隊時間觀側寫計分表：六個向度的團隊平均與百分位"></svg>
+        </div>
+        <svg id="t-profile-m" class="profile-m" viewBox="0 0 360 560" role="img" aria-label="團隊時間觀側寫計分表（直式）"></svg>
+        <div class="legend">
+          <span><span class="dot team"></span><span class="sw team"></span>團隊平均</span>
+          <span id="legend-mine"><span class="dot you"></span><span class="sw"></span>你的時間觀</span>
+          <span class="legend-ideal"><span class="dot ideal"></span><span class="sw dash"></span>作者理想時間觀</span>
+        </div>
+      </div>
+      <div class="dims" id="t-dims"></div>
+    </div>
+    <div class="row">
+      <button class="btn primary" id="btn-t-refresh" type="button">重新整理</button>
+      <button class="btn" id="btn-t-download" type="button" hidden>下載團隊統計圖</button>
+      <button class="btn" id="btn-t-result" type="button">回到我的結果</button>
+      <button class="btn" id="btn-t-home" type="button">回到開始頁</button>
+      <span class="copy-status" id="t-status" aria-live="polite"></span>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  // ===== 團隊統計設定 =====
+  // 貼上 Google Apps Script 網頁應用程式的 /exec 網址；留空則隱藏團隊統計功能
+  const API_URL = "https://script.google.com/macros/s/AKfycbwp0nqw0_urCTPFlMigKh2y_wrHnWdl3W3M1acXE2NRm1kYwgCLcGGk9yrsHIbZ_kxJzA/exec";
+  const TEAM_ON = /^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(API_URL) || window.__ZTPI_API__ != null;
+  const API = window.__ZTPI_API__ || API_URL; // __ZTPI_API__ 僅供本機測試覆寫
+
+  // ===== 題目 =====
+  const PART1 = [
+    "和朋友一起去參加派對，是生活中重要的樂趣之一。",
+    "童年熟悉的景像、聲音與氣味常會喚起潮水般的美好回憶。",
+    "命運決定了我的大部分人生。",
+    "我總覺得人生中有些事情應該可以不一樣。",
+    "我的決定多數都會受到周遭人與事的影響。",
+    "我認為一日之事應該在每天清晨就做好計畫。",
+    "回憶往昔令我覺得快樂。",
+    "我往往憑一時的衝動行事。",
+    "事情沒有準時做完，我並不會擔心。",
+    "想要做什麼事情時，我會先設定目標，並思考達成目標的方法。",
+    "總的來說，回憶往事，好事多過壞事。",
+    "聽自己喜歡的音樂，我常會忘了時間。",
+    "為明天必須完成的事做必須的準備，我會犧牲今晚的逸樂。",
+    "事情既然無可避免，我就聽其自然。",
+    "我喜歡聽「美好舊日時光」的故事。",
+    "過去的痛苦經驗常會在我心中重演。",
+    "我會讓日子過得盡量充實，絕不虛度。",
+    "我會因為約會遲到而心情不好。",
+    "我會把每一天當作最後一天過。",
+    "我常會想起往昔的美好時光。",
+    "對朋友和長官應盡的責任，我都會按時做到。",
+    "過去所受的委屈與排斥，我始終耿耿於懷。",
+    "我往往倉促做決定。",
+    "我每天得過且過。",
+    "往日有太多不愉快的回憶，我寧願不去想。",
+    "在生活中來點刺激是很重要的。",
+    "過去所犯的錯誤，我希望能夠改過。",
+    "享受過程比準時把工作做完更重要。",
+    "我懷念童年。",
+    "做決定前，我會先衡量利弊得失。",
+    "冒險使我的生活免於單調無聊。",
+    "對我來說，享受生活的旅程重於全新追求目標。",
+    "事情很少如我自己所願。",
+    "對我來說，年少時的不愉快很難忘懷。",
+    "如果我不用考慮活動的目標、結果，便可以從過程中得到樂趣。",
+    "即使我對現狀很滿意，我還是會拿過去類似的經驗做比較。",
+    "世事變化萬端，未來其實是無法計畫的。",
+    "我的人生道路非我所能控制。",
+    "為未來擔憂毫無意義，因為我根本無從著手。",
+    "我都循序漸進地準時完成計畫。",
+    "每當家人談起往事，我發覺自己總是無法融入。",
+    "我冒險是為了要讓生活增添刺激。",
+    "我會把要做的事情列出清單。",
+    "我常順著情緒而非理智去做事。",
+    "知道有工作要做時，我能夠抗拒誘惑。",
+    "我知道自己興奮起來會一發不可收拾。",
+    "今天的生活太複雜，我比較喜歡以前的日子。",
+    "我比較喜歡隨性的朋友而非一板一眼的。",
+    "我喜歡定期舉行的家庭慶典及傳統活動。",
+    "我會一再想到過去不如意的事情。",
+    "工作即使困難又乏味，但若能使自己進步，我會堅持下去。",
+    "賺了錢，今朝有酒今朝醉，好過存錢保明朝。",
+    "好運常光顧勝過辛苦去打拼。",
+    "我會一再想到與自己擦肩而過的好事。",
+    "我喜歡自己的親密關係如膠似漆。",
+    "趕工作，不怕沒有時間。"
+  ];
+  const PART2 = [
+    "只有肉體會死。",
+    "身體只是真我的暫時寓所。",
+    "死亡只是另一個新的起點。",
+    "我相信奇蹟。",
+    "進化論充分說明了人類的來源。",
+    "人有靈魂。",
+    "科學法則並不能解釋一切。",
+    "人死的時候，要為自己在世間的行為負責。",
+    "人當遵守神律。",
+    "我相信精神。"
+  ];
+  // 全部題目：index 0–55 為第一部分，56–65 為第二部分
+  const QUESTIONS = PART1.map((t, i) => ({ part: 1, no: i + 1, text: t }))
+    .concat(PART2.map((t, i) => ({ part: 2, no: i + 1, text: t })));
+
+  // ===== 計分設定（題號皆為各部分內的題號）=====
+  const REVERSE_P1 = new Set([9, 24, 41, 56]);
+  const REVERSE_P2 = new Set([5]);
+  const DIMS = [
+    { id: "pn", name: "過去負面", part: 1, color: "var(--pn)",
+      items: [4, 5, 16, 22, 27, 33, 34, 36, 50, 54],
+      desc: "容易回想過去的遺憾、失誤與傷痛，對往事帶著負面感受。" },
+    { id: "pp", name: "過去正面", part: 1, color: "var(--pp)",
+      items: [2, 7, 11, 15, 20, 25, 29, 41, 49],
+      desc: "以溫暖、懷舊的眼光看待過去，重視家庭、傳統與美好回憶。" },
+    { id: "pf", name: "現在宿命", part: 1, color: "var(--pf)",
+      items: [3, 14, 35, 37, 38, 39, 47, 52, 53],
+      desc: "覺得人生多由命運或外力決定，對未來較少掌控感。" },
+    { id: "ph", name: "現在享樂", part: 1, color: "var(--ph)",
+      items: [1, 8, 12, 17, 19, 23, 26, 28, 31, 32, 42, 44, 46, 48, 55],
+      desc: "活在當下，追求樂趣、刺激與新鮮感，較少為後果多想。" },
+    { id: "fu", name: "未來", part: 1, color: "var(--fu)",
+      items: [6, 9, 10, 13, 18, 21, 24, 30, 40, 43, 45, 51, 56],
+      desc: "重視目標、規劃與責任，願意為長遠回報延後享樂。" },
+    { id: "tf", name: "超驗未來", part: 2, color: "var(--tf)",
+      items: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      desc: "相信肉體死亡之後仍有未來，例如靈魂、來世或精神的延續。" }
+  ];
+  const LABELS = ["完全不是", "不太是", "介於中間", "有點是", "完全是"];
+
+  // ===== 常模：時間觀側寫計分表（資料日期 2012-09-17）=====
+  // 每個向度在各百分位對應的平均分數；ideal 為理想時間觀所在的百分位
+  const PCTS = [99, 90, 80, 70, 60, 50, 40, 30, 20, 10, 1];
+  const NORMS = {
+    pn: { vals: [4.7, 4.0, 3.7, 3.4, 3.2, 3.0, 2.8, 2.6, 2.4, 2.1, 1.4], ideal: 10 },
+    pp: { vals: [4.11, 3.67, 3.56, 3.44, 3.33, 3.22, 3.11, 3.0, 2.78, 2.56, 2.00], ideal: 90 },
+    pf: { vals: [3.89, 3.11, 2.78, 2.67, 2.44, 2.33, 2.22, 2.0, 1.89, 1.67, 1.11], ideal: 10 },
+    ph: { vals: [4.65, 4.53, 4.33, 4.13, 4.00, 3.93, 3.80, 3.67, 3.47, 3.27, 2.67], ideal: 80 },
+    fu: { vals: [4.15, 3.85, 3.69, 3.62, 3.54, 3.38, 3.31, 3.23, 3.08, 2.85, 2.31], ideal: 80 },
+    tf: { vals: [4.80, 4.4, 4.10, 3.9, 3.60, 3.4, 3.20, 2.9, 2.50, 1.9, 1.40], ideal: 50 }
+  };
+  DIMS.forEach((d) => { const n = NORMS[d.id]; d.norm = n.vals; d.idealPct = n.ideal; d.ideal = n.vals[PCTS.indexOf(n.ideal)]; });
+
+  // 分數 → 在表上的位置（0 = 99% 列，10 = 1% 列，可超出兩端）與百分位
+  function locate(vals, v) {
+    const last = vals.length - 1;
+    if (v >= vals[0]) { const step = vals[0] - vals[1]; return { pos: -Math.min(0.6, (v - vals[0]) / step), pct: 99, edge: "above" }; }
+    if (v <= vals[last]) { const step = vals[last - 1] - vals[last]; return { pos: last + Math.min(0.6, (vals[last] - v) / step), pct: 1, edge: "below" }; }
+    for (let j = 0; j < last; j++) {
+      if (v <= vals[j] && v >= vals[j + 1]) {
+        const t = (vals[j] - v) / (vals[j] - vals[j + 1]);
+        return { pos: j + t, pct: PCTS[j] - t * (PCTS[j] - PCTS[j + 1]), edge: null };
+      }
+    }
+  }
+  const pctText = (l) => l.edge === "above" ? "99 以上" : l.edge === "below" ? "1 以下" : String(Math.round(l.pct));
+  window.__ztpiLocate = locate;
+
+  // ===== 狀態 =====
+  const KEY = "ztpi-team-v1";
+  const TTL = 60 * 60 * 1000; // 作答與結果只暫存 1 小時（從最後一次操作起算）
+  let state = { answers: new Array(QUESTIONS.length).fill(null), idx: 0, view: "intro" };
+  try {
+    const saved = JSON.parse(localStorage.getItem(KEY) || "null");
+    const fresh = saved && typeof saved.savedAt === "number" && Date.now() - saved.savedAt < TTL;
+    if (fresh && Array.isArray(saved.answers) && saved.answers.length === QUESTIONS.length) state = saved;
+    else localStorage.removeItem(KEY);
+  } catch (e) {}
+  function save() { state.savedAt = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+
+  const $ = (id) => document.getElementById(id);
+  const answeredCount = () => state.answers.filter((a) => a != null).length;
+
+  // ===== 計分 =====
+  function score(answers) {
+    return DIMS.map((d) => {
+      const offset = d.part === 1 ? 0 : PART1.length;
+      const rev = d.part === 1 ? REVERSE_P1 : REVERSE_P2;
+      let sum = 0;
+      d.items.forEach((no) => {
+        const raw = answers[offset + no - 1];
+        sum += rev.has(no) ? 6 - raw : raw;
+      });
+      return { ...d, sum, avg: sum / d.items.length };
+    });
+  }
+  window.__ztpiScore = score; // 供驗算用
+
+  // ===== 畫面切換 =====
+  function show(view) {
+    state.view = view; save();
+    $("view-intro").hidden = view !== "intro";
+    $("view-quiz").hidden = view !== "quiz";
+    $("view-result").hidden = view !== "result";
+    $("view-review").hidden = view !== "review";
+    $("view-team").hidden = view !== "team";
+    if (view !== "quiz") state.fromReview = false;
+    if (view === "team") loadTeam();
+    if (view === "review") renderReview();
+    if (view === "intro") renderIntro();
+    if (view === "quiz") renderQuestion();
+    if (view === "result") renderResult();
+    window.scrollTo(0, 0);
+  }
+
+  function renderIntro() {
+    const box = $("intro-actions");
+    box.innerHTML = "";
+    const n = answeredCount();
+    const mk = (label, cls, fn) => { const b = document.createElement("button"); b.type = "button"; b.className = "btn " + cls; b.textContent = label; b.onclick = fn; box.appendChild(b); };
+    $("name-input").value = getName();
+    $("name-error").textContent = "";
+    $("name-note").hidden = !TEAM_ON;
+    if (n === QUESTIONS.length) {
+      mk("查看我的結果", "primary", () => show("result"));
+      mk("重新作答", "", () => requireName(restart));
+    } else if (n > 0) {
+      mk(`繼續作答（已答 ${n} / ${QUESTIONS.length} 題）`, "primary", () => requireName(() => { state.idx = firstUnanswered(); show("quiz"); }));
+      mk("重新開始", "", () => requireName(restart));
+    } else {
+      mk("開始測驗", "primary", () => requireName(() => { state.idx = 0; show("quiz"); }));
+    }
+    if (TEAM_ON) mk("查看團隊統計", "", () => show("team"));
+    if (n > 0 && typeof state.savedAt === "number") {
+      const until = new Date(state.savedAt + TTL);
+      const hint = document.createElement("span");
+      hint.className = "note";
+      hint.textContent = `${n === QUESTIONS.length ? "上次結果" : "作答進度"}暫存到 ${String(until.getHours()).padStart(2, "0")}:${String(until.getMinutes()).padStart(2, "0")}，之後自動清除`;
+      box.appendChild(hint);
+    }
+  }
+
+  function firstUnanswered() { const i = state.answers.findIndex((a) => a == null); return i < 0 ? 0 : i; }
+  function restart() { state = { answers: new Array(QUESTIONS.length).fill(null), idx: 0, view: "quiz" }; save(); show("quiz"); }
+
+  let advanceTimer = null;
+  function renderQuestion() {
+    const q = QUESTIONS[state.idx];
+    const total = q.part === 1 ? PART1.length : PART2.length;
+    $("q-part").textContent = q.part === 1 ? "第一部分 · 時間觀量表" : "第二部分 · 超驗未來型時間觀";
+    $("q-count").textContent = `${answeredCount()} / ${QUESTIONS.length} 已作答`;
+    $("q-bar").style.width = (answeredCount() / QUESTIONS.length * 100) + "%";
+    $("part-banner").hidden = !(q.part === 2 && q.no === 1);
+    $("q-num").textContent = `第 ${q.no} / ${total} 題`;
+    $("q-text").textContent = q.text;
+    const scale = $("q-scale");
+    scale.innerHTML = "";
+    LABELS.forEach((label, i) => {
+      const v = i + 1;
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "opt"; b.id = "opt-" + v;
+      b.setAttribute("aria-pressed", state.answers[state.idx] === v ? "true" : "false");
+      b.innerHTML = `<span class="n">${v}</span><span class="t">${label}</span>`;
+      b.onclick = () => answer(v);
+      scale.appendChild(b);
+    });
+    $("btn-prev").disabled = state.idx === 0;
+    const last = state.idx === QUESTIONS.length - 1;
+    $("btn-next").textContent = last ? "查看結果" : "下一題";
+    $("btn-next").disabled = last ? answeredCount() < QUESTIONS.length : state.answers[state.idx] == null;
+  }
+
+  function answer(v) {
+    state.answers[state.idx] = v; save();
+    renderQuestion();
+    clearTimeout(advanceTimer);
+    advanceTimer = setTimeout(() => {
+      if (state.fromReview) { show("review"); return; }
+      if (state.idx < QUESTIONS.length - 1) {
+        state.idx++; save(); renderQuestion();
+        $("q-scale").classList.add("fresh");
+        if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+      }
+      else if (answeredCount() === QUESTIONS.length) show("result");
+      else { state.idx = firstUnanswered(); save(); renderQuestion(); }
+    }, 220);
+  }
+  function go(delta) {
+    clearTimeout(advanceTimer);
+    const next = state.idx + delta;
+    if (next < 0) return;
+    if (next >= QUESTIONS.length) {
+      if (answeredCount() === QUESTIONS.length) show("result");
+      else { state.idx = firstUnanswered(); save(); renderQuestion(); }
+      return;
+    }
+    if (delta > 0 && state.answers[state.idx] == null) return;
+    state.idx = next; save(); renderQuestion();
+  }
+  $("q-scale").addEventListener("mousemove", () => $("q-scale").classList.remove("fresh"));
+  $("btn-prev").onclick = () => go(-1);
+  $("btn-next").onclick = () => go(1);
+  $("btn-home").onclick = () => show("intro");
+  document.addEventListener("keydown", (e) => {
+    if (state.view !== "quiz" || e.altKey || e.ctrlKey || e.metaKey) return;
+    if (/^[1-5]$/.test(e.key)) { answer(Number(e.key)); e.preventDefault(); }
+    else if (e.key === "ArrowLeft") go(-1);
+    else if (e.key === "ArrowRight") go(1);
+  });
+
+  // ===== 結果 =====
+  const fmt = (v) => v.toFixed(2);
+  const fmtTime = (t) => {
+    const d = new Date(t);
+    if (isNaN(d)) return "";
+    const p = (n) => String(n).padStart(2, "0");
+    return `${d.getMonth() + 1}/${d.getDate()} ${p(d.getHours())}:${p(d.getMinutes())}`;
+  };
+  // 是否顯示作者理想時間觀（偏好存在各自瀏覽器，預設關閉）
+  const IDEAL_KEY = "ztpi-show-ideal-v2";
+  let showIdealPref = false;
+  try { showIdealPref = localStorage.getItem(IDEAL_KEY) === "1"; } catch (e) {}
+  const showIdeal = () => showIdealPref;
+  document.querySelectorAll(".toggle-ideal").forEach((el) => el.addEventListener("change", (e) => {
+    showIdealPref = e.target.checked;
+    try { localStorage.setItem(IDEAL_KEY, showIdealPref ? "1" : "0"); } catch (err) {}
+    $("copy-fallback").hidden = true; $("copy-status").textContent = "";
+    if (state.view === "result") renderResult();
+    if (state.view === "team") renderTeam();
+  }));
+  function syncIdealUi() {
+    document.querySelectorAll(".toggle-ideal").forEach((el) => { el.checked = showIdealPref; });
+    document.querySelectorAll(".legend-ideal").forEach((el) => { el.hidden = !showIdealPref; });
+  }
+
+  function renderResult() {
+    if (answeredCount() < QUESTIONS.length) { state.idx = firstUnanswered(); show("quiz"); return; }
+    const res = score(state.answers).map((r) => ({ ...r, loc: locate(r.norm, r.avg) }));
+    res.forEach((r) => { r.gap = r.loc.pct - r.idealPct; });
+    const near = res.reduce((a, b) => (Math.abs(b.gap) < Math.abs(a.gap) ? b : a));
+    const far = res.reduce((a, b) => (Math.abs(b.gap) > Math.abs(a.gap) ? b : a));
+    const top = res.reduce((a, b) => (b.loc.pct > a.loc.pct ? b : a));
+    $("r-title").textContent = `相對於一般人，你最突出的是「${top.name}」`;
+    const low = res.reduce((a, b) => (b.loc.pct < a.loc.pct ? b : a));
+    const ideal = showIdeal();
+    syncIdealUi();
+    $("r-summary").textContent =
+      `你的「${top.name}」分數 ${fmt(top.avg)}，約落在第 ${pctText(top.loc)} 百分位。` +
+      (ideal
+        ? `和作者理想時間觀相比，「${near.name}」最接近理想位置；「${far.name}」差距最大` +
+          `（你在第 ${pctText(far.loc)} 百分位，作者理想是第 ${far.idealPct} 百分位）。`
+        : `相對最低的是「${low.name}」，分數 ${fmt(low.avg)}，約落在第 ${pctText(low.loc)} 百分位。`);
+    const series = [{ color: "var(--accent)", avgs: res.map((r) => r.avg), primary: true }];
+    drawProfile($("profile"), series);
+    drawProfileMobile($("profile-m"), series);
+
+    const box = $("r-dims");
+    box.innerHTML = "";
+    res.forEach((r) => {
+      const g = r.gap;
+      const gapText = Math.abs(g) < 5 ? "與作者理想位置相當" : (g > 0 ? `比作者理想高 ${Math.round(g)} 個百分位` : `比作者理想低 ${Math.round(-g)} 個百分位`);
+      const el = document.createElement("div");
+      el.className = "dim";
+      el.innerHTML = `
+        <div class="dim-top">
+          <div class="dim-name"><i style="background:${r.color}"></i>${r.name}${r === top ? '<span class="top-pill">最突出</span>' : ""}</div>
+          <div class="dim-score">${fmt(r.avg)}</div>
+        </div>
+        <div class="pct-row">
+          <span>你的百分位 <b>${pctText(r.loc)}</b></span>
+          ${ideal ? `<span>作者理想 <b>第 ${r.idealPct} 百分位（${fmt(r.ideal)} 分）</b></span>
+          <span>${gapText}</span>` : ""}
+        </div>
+        <p class="dim-desc">${r.desc}</p>
+        <p class="dim-gap num">總分 ${r.sum} ÷ ${r.items.length} 題 = ${fmt(r.avg)}</p>`;
+      box.appendChild(el);
+    });
+    renderSubmit();
+  }
+
+  // 時間觀側寫計分表：六條直軸，每列為一個百分位，軸旁標示該百分位的分數
+  // series: [{ color, avgs[6], primary }]；primary 那條線畫在最上層並標分數
+  function drawProfile(svg, series) {
+    const left = 150, right = 780, top = 140, rowH = 44, bottom = top + rowH * 10;
+    const colW = (right - left) / DIMS.length;
+    const cx = (i) => left + colW * (i + 0.5);
+    const ry = (pos) => top + pos * rowH;
+    const NUM = 'font-family="IBM Plex Mono, monospace"';
+    const TXT = 'font-family="Noto Sans TC, sans-serif"';
+    let s = "";
+    // 標題
+    s += `<text x="${(left + right) / 2}" y="30" text-anchor="middle" font-size="16" font-weight="700" letter-spacing="4" fill="var(--ink)" ${TXT}>時間觀</text>`;
+    // 隔列底色
+    PCTS.forEach((p, j) => {
+      if (j % 2 === 1) s += `<rect x="${left - 85}" y="${ry(j) - rowH / 2 + 4}" width="${right - left + 85}" height="${rowH - 8}" fill="var(--band)"/>`;
+    });
+    // 外框
+    s += `<rect x="${left - 10}" y="${top - 52}" width="${right - left + 10}" height="${bottom - top + 92}" fill="none" stroke="var(--ink)" stroke-width="1.2"/>`;
+    // 百分位列標
+    PCTS.forEach((p, j) => {
+      s += `<text x="${left - 30}" y="${ry(j) + 5}" text-anchor="end" font-size="15" fill="var(--ink)" ${NUM}>${p}%</text>`;
+    });
+    // 左側直排說明
+    s += `<text transform="translate(28 ${(top + bottom) / 2}) rotate(-90)" text-anchor="middle" font-size="12" letter-spacing="2" fill="var(--muted)" ${TXT}>百分位（分數高於多少比例的人）</text>`;
+    // 各向度直軸
+    DIMS.forEach((d, i) => {
+      const x = cx(i);
+      s += `<text x="${x}" y="${top - 72}" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)" ${TXT}>${d.name}</text>`;
+      s += `<line x1="${x}" y1="${top - 48}" x2="${x}" y2="${bottom + 32}" stroke="var(--ink)" stroke-width="1.4"/>`;
+      d.norm.forEach((v, j) => {
+        const strong = j % 2 === 1;
+        s += `<line x1="${x - 7}" y1="${ry(j)}" x2="${x}" y2="${ry(j)}" stroke="var(--ink)" stroke-width="1" opacity="${strong ? 1 : .45}"/>`;
+        s += `<text x="${x - 11}" y="${ry(j) + 4}" text-anchor="end" font-size="13" fill="${strong ? "var(--ink)" : "var(--muted)"}" ${NUM}>${v}</text>`;
+      });
+    });
+    // 理想時間觀
+    const idealPts = showIdeal() ? DIMS.map((d, i) => [cx(i), ry(PCTS.indexOf(d.idealPct))]) : [];
+    if (idealPts.length) s += `<polyline points="${idealPts.map((p) => p.join(",")).join(" ")}" fill="none" stroke="var(--ideal)" stroke-width="1.8" stroke-dasharray="2 4" stroke-linecap="round"/>`;
+    idealPts.forEach(([x, y]) => { s += `<circle cx="${x}" cy="${y}" r="7" fill="var(--ideal)"/>`; });
+    // 各條線（次要先畫，主要最後畫在最上層）
+    const ordered = series.filter((sr) => !sr.primary).concat(series.filter((sr) => sr.primary));
+    ordered.forEach((sr) => {
+      const pts = DIMS.map((d, i) => [cx(i), ry(locate(d.norm, sr.avgs[i]).pos)]);
+      s += `<polyline points="${pts.map((p) => p.join(",")).join(" ")}" fill="none" stroke="${sr.color}" stroke-width="${sr.primary ? 3 : 2.2}" stroke-linejoin="round" stroke-linecap="round" opacity="${sr.primary ? 1 : .85}"/>`;
+      pts.forEach(([x, y], i) => {
+        s += `<circle cx="${x}" cy="${y}" r="${sr.primary ? 7.5 : 6}" fill="${sr.color}" stroke="var(--surface)" stroke-width="2.5"/>`;
+        if (sr.primary) s += `<text x="${x + 12}" y="${y + 5}" font-size="14" font-weight="500" fill="${sr.color}" stroke="var(--surface)" stroke-width="4" paint-order="stroke" ${NUM}>${fmt(sr.avgs[i])}</text>`;
+      });
+    });
+    // 底部說明
+    s += `<text x="${left - 10}" y="${bottom + 66}" font-size="12" fill="var(--muted)" ${TXT}>時間觀側寫計分表</text>`;
+    s += `<text x="${right}" y="${bottom + 66}" text-anchor="end" font-size="12" fill="var(--muted)" ${TXT}>常模資料日期：2012 年 9 月 17 日</text>`;
+    svg.setAttribute("viewBox", `0 0 800 ${bottom + 80}`);
+    svg.innerHTML = s;
+  }
+
+  // 直式計分表（手機）：每個向度一條橫軸，左 1% → 右 99%
+  function drawProfileMobile(svg, series) {
+    const L = 28, R = 332, step = (R - L) / 10, top = 46, rowH = 78;
+    const px = (pos) => L + (10 - pos) * step;
+    const NUM = 'font-family="IBM Plex Mono, monospace"';
+    const TXT = 'font-family="Noto Sans TC, sans-serif"';
+    const bottom = top + rowH * DIMS.length;
+    const lineY = (i) => top + i * rowH + 40;
+    const primary = series.find((sr) => sr.primary) || series[0];
+    let s = "";
+    s += `<text x="${L - 6}" y="14" font-size="11" fill="var(--muted)" ${TXT}>百分位（分數高於多少比例的人）→</text>`;
+    PCTS.forEach((p, j) => {
+      const strong = j % 2 === 1;
+      if (strong) s += `<rect x="${px(j) - step * 0.42}" y="${top - 8}" width="${step * 0.84}" height="${bottom - top + 4}" fill="var(--band)"/>`;
+      s += `<text x="${px(j)}" y="${top - 16}" text-anchor="middle" font-size="10" fill="${strong ? "var(--ink)" : "var(--muted)"}" ${NUM}>${p}%</text>`;
+    });
+    // 文字加上底色描邊，畫在連線之上，避免被線穿過
+    const HALO = 'stroke="var(--surface)" stroke-width="4" stroke-linejoin="round" paint-order="stroke"';
+    let t = "";
+    DIMS.forEach((d, i) => {
+      const y = lineY(i);
+      const loc = locate(d.norm, primary.avgs[i]);
+      t += `<text x="${L - 6}" y="${y - 18}" font-size="14" font-weight="700" fill="var(--ink)" ${HALO} ${TXT}>${d.name}</text>`;
+      t += `<text x="${R + 6}" y="${y - 18}" text-anchor="end" font-size="12" fill="${primary.color}" ${HALO} ${NUM}>${fmt(primary.avgs[i])} · 第 ${pctText(loc)} 百分位</text>`;
+      s += `<line x1="${L}" y1="${y}" x2="${R}" y2="${y}" stroke="var(--ink)" stroke-width="1.2"/>`;
+      d.norm.forEach((v, j) => {
+        const strong = j % 2 === 1;
+        s += `<line x1="${px(j)}" y1="${y}" x2="${px(j)}" y2="${y + 5}" stroke="var(--ink)" stroke-width="1" opacity="${strong ? 1 : .45}"/>`;
+        if (strong) t += `<text x="${px(j)}" y="${y + 18}" text-anchor="middle" font-size="10" fill="var(--muted)" ${HALO} ${NUM}>${v}</text>`;
+      });
+    });
+    let dots = "";
+    if (showIdeal()) {
+      const pts = DIMS.map((d, i) => [px(PCTS.indexOf(d.idealPct)), lineY(i)]);
+      s += `<polyline points="${pts.map((p) => p.join(",")).join(" ")}" fill="none" stroke="var(--ideal)" stroke-width="1.6" stroke-dasharray="2 4" stroke-linecap="round"/>`;
+      pts.forEach(([x, y]) => { dots += `<circle cx="${x}" cy="${y}" r="5.5" fill="var(--ideal)"/>`; });
+    }
+    const ordered = series.filter((sr) => sr !== primary).concat([primary]);
+    ordered.forEach((sr) => {
+      const up = DIMS.map((d, i) => [px(locate(d.norm, sr.avgs[i]).pos), lineY(i)]);
+      const main = sr === primary;
+      s += `<polyline points="${up.map((p) => p.join(",")).join(" ")}" fill="none" stroke="${sr.color}" stroke-width="${main ? 2.5 : 2}" stroke-linejoin="round" stroke-linecap="round" opacity="${main ? 1 : .85}"/>`;
+      up.forEach(([x, y]) => { dots += `<circle cx="${x}" cy="${y}" r="${main ? 6.5 : 5.5}" fill="${sr.color}" stroke="var(--surface)" stroke-width="2"/>`; });
+    });
+    s += t + dots;
+    s += `<text x="${R + 6}" y="${bottom + 18}" text-anchor="end" font-size="10" fill="var(--muted)" ${TXT}>常模資料日期：2012 年 9 月 17 日</text>`;
+    svg.setAttribute("viewBox", `0 0 360 ${bottom + 28}`);
+    svg.innerHTML = s;
+  }
+
+  function resultText() {
+    const res = score(state.answers);
+    return "【ZTPI 時間觀測驗結果】\n" + res.map((r) => {
+      const l = locate(r.norm, r.avg);
+      return `${r.name}：${fmt(r.avg)} 分（第 ${pctText(l)} 百分位` + (showIdeal() ? `，作者理想第 ${r.idealPct} 百分位）` : "）");
+    }).join("\n");
+  }
+  $("btn-copy").onclick = () => {
+    const text = resultText();
+    const fb = $("copy-fallback");
+    const fallback = () => { fb.value = text; fb.hidden = false; fb.focus(); fb.select(); $("copy-status").textContent = "請手動複製下方文字"; };
+    try {
+      navigator.clipboard.writeText(text).then(() => { $("copy-status").textContent = "已複製，可貼到團隊群組"; fb.hidden = true; }, fallback);
+    } catch (e) { fallback(); }
+  };
+
+  // ===== 下載圖片（PNG）=====
+  function saveBlob(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+  }
+
+  // legends: [[色彩 token, 標籤, 是否虛線], ...]
+  async function chartPng(svg, title, subtitle, legends) {
+    const cs = getComputedStyle(document.documentElement);
+    const tok = (n) => cs.getPropertyValue(n).trim();
+    const vb = svg.viewBox.baseVal, W = vb.width, H = vb.height;
+    let xml = new XMLSerializer().serializeToString(svg)
+      .replace(/var\((--[\w-]+)\)/g, (_, n) => tok(n));
+    if (!/xmlns=/.test(xml)) xml = xml.replace("<svg", '<svg xmlns="http://www.w3.org/2000/svg"');
+    xml = xml.replace("<svg", `<svg width="${W}" height="${H}"`);
+    const img = new Image();
+    img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(xml);
+    await img.decode();
+
+    const scale = 2, pad = 40, head = 96, foot = 56;
+    const cw = W + pad * 2, ch = head + H + foot;
+    const canvas = document.createElement("canvas");
+    canvas.width = cw * scale; canvas.height = ch * scale;
+    const ctx = canvas.getContext("2d");
+    ctx.scale(scale, scale);
+    ctx.fillStyle = tok("--surface"); ctx.fillRect(0, 0, cw, ch);
+    const sans = '"Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif';
+    ctx.fillStyle = tok("--ink"); ctx.font = `700 28px "LXGW WenKai TC", ${sans}`;
+    ctx.fillText(title, pad, 52);
+    ctx.fillStyle = tok("--muted"); ctx.font = `14px ${sans}`;
+    ctx.fillText(subtitle, pad, 78);
+    ctx.drawImage(img, pad, head, W, H);
+    // 圖例
+    let x = pad; const y = head + H + 28;
+    legends.forEach(([token, label, dashed]) => {
+      const color = tok(token);
+      ctx.fillStyle = color; ctx.beginPath(); ctx.arc(x + 6, y - 5, 6, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = color; ctx.lineWidth = dashed ? 2 : 3; ctx.setLineDash(dashed ? [2, 4] : []);
+      ctx.beginPath(); ctx.moveTo(x + 16, y - 5); ctx.lineTo(x + 40, y - 5); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = tok("--muted"); ctx.font = `14px ${sans}`; ctx.fillText(label, x + 48, y);
+      x += 48 + ctx.measureText(label).width + 28;
+    });
+    return await new Promise((res, rej) => canvas.toBlob((b) => (b ? res(b) : rej(new Error("toBlob"))), "image/png"));
+  }
+  const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
+
+  async function runDownload(btn, statusEl, make, filename) {
+    btn.disabled = true; statusEl.textContent = "正在產生圖片…";
+    try { saveBlob(await make(), filename); statusEl.textContent = "圖片已下載"; }
+    catch (e) { statusEl.textContent = "圖片產生失敗，請重新整理後再試"; }
+    finally { btn.disabled = false; }
+  }
+  $("btn-download").onclick = () => runDownload($("btn-download"), $("copy-status"), () => {
+    const legends = [["--accent", "你的時間觀", false]];
+    if (showIdeal()) legends.push(["--ideal", "作者理想時間觀", true]);
+    return chartPng($("profile"), "ZTPI 時間觀側寫", `作答日期 ${today()}`, legends);
+  }, "ZTPI時間觀側寫.png");
+
+  // ===== 名稱與瀏覽器識別 =====
+  const NAME_KEY = "ztpi-name", CID_KEY = "ztpi-client-id", SENT_KEY = "ztpi-sent-at";
+  const lsGet = (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+  const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+  function cleanName(s) {
+    s = String(s || "").trim();
+    while (/^[=+\-@]/.test(s)) s = s.slice(1).trim();
+    return s.slice(0, 20);
+  }
+  const getName = () => cleanName(lsGet(NAME_KEY));
+  function setName(v) { const n = cleanName(v); lsSet(NAME_KEY, n); return n; }
+  function clientId() {
+    let id = lsGet(CID_KEY);
+    if (!id || !/^[A-Za-z0-9-]{1,64}$/.test(id)) {
+      id = (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
+        : Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 12);
+      lsSet(CID_KEY, id);
+    }
+    return id;
+  }
+  function requireName(next) {
+    const n = setName($("name-input").value);
+    $("name-input").value = n;
+    if (!n) { $("name-error").textContent = "請先填寫名稱再開始"; $("name-input").focus(); return; }
+    $("name-error").textContent = "";
+    next();
+  }
+  $("name-input").addEventListener("input", () => { $("name-error").textContent = ""; });
+  $("name-input").addEventListener("change", () => { $("name-input").value = setName($("name-input").value); });
+
+  // ===== 送出到團隊統計 =====
+  function renderSubmit(message) {
+    $("submit-box").hidden = !TEAM_ON;
+    if (!TEAM_ON) return;
+    if (document.activeElement !== $("name-result")) $("name-result").value = getName();
+    const sent = Number(lsGet(SENT_KEY));
+    $("btn-submit").textContent = sent ? "重新送出（會取代上次的結果）" : "送出到團隊統計";
+    $("submit-status").textContent = message || (sent ? `這個瀏覽器已於 ${fmtTime(sent)} 送出過。` : "");
+  }
+  $("btn-submit").onclick = async () => {
+    const name = setName($("name-result").value);
+    $("name-result").value = name;
+    if (!name) { $("submit-status").textContent = "請先填寫名稱"; $("name-result").focus(); return; }
+    const scores = score(state.answers).map((r) => Math.round(r.avg * 100) / 100);
+    const btn = $("btn-submit");
+    btn.disabled = true; $("submit-status").textContent = "送出中…";
+    try {
+      const r = await fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ name, clientId: clientId(), scores })
+      });
+      const j = await r.json();
+      if (!j || !j.ok) throw new Error((j && j.error) || "伺服器沒有接受這筆資料");
+      lsSet(SENT_KEY, String(Date.now()));
+      renderSubmit(`已送出，目前團隊共 ${j.count} 人。`);
+    } catch (e) {
+      renderSubmit(`送出失敗：${e.message || "網路錯誤"}。請檢查網路後再按一次。`);
+    } finally { btn.disabled = false; }
+  };
+  $("btn-team").onclick = () => show("team");
+
+  // ===== 團隊統計 =====
+  let teamData = null, teamSeq = 0;
+  async function loadTeam() {
+    const seq = ++teamSeq;
+    $("t-summary").textContent = "載入中…";
+    $("t-status").textContent = "";
+    $("btn-t-result").hidden = answeredCount() < QUESTIONS.length;
+    if (!TEAM_ON) { $("t-summary").textContent = "團隊統計還沒有設定。"; $("t-body").hidden = true; return; }
+    try {
+      const r = await fetch(API + (API.includes("?") ? "&" : "?") + "t=" + Date.now());
+      const j = await r.json();
+      if (seq !== teamSeq) return;
+      if (!j || !j.ok) throw new Error((j && j.error) || "回應格式不正確");
+      teamData = j;
+      renderTeam();
+    } catch (e) {
+      if (seq !== teamSeq) return;
+      $("t-body").hidden = true;
+      $("btn-t-download").hidden = true;
+      $("t-summary").textContent = `讀取團隊統計失敗：${e.message || "網路錯誤"}。請按「重新整理」再試一次。`;
+    }
+  }
+  function renderTeam() {
+    if (!teamData) return;
+    const n = teamData.count || 0;
+    const ok = n > 0 && Array.isArray(teamData.avgs) && teamData.avgs.length === 6 && teamData.avgs.every((v) => typeof v === "number" && isFinite(v));
+    $("t-body").hidden = !ok;
+    $("btn-t-download").hidden = !ok;
+    if (!ok) { $("t-summary").textContent = "還沒有人送出結果。作答完在結果頁按「送出到團隊統計」，就會算進這裡。"; return; }
+    $("t-summary").textContent = `目前 ${n} 人` + (teamData.updatedAt ? ` · 最後送出於 ${fmtTime(teamData.updatedAt)}` : "");
+    syncIdealUi();
+    const mine = answeredCount() === QUESTIONS.length ? score(state.answers).map((r) => r.avg) : null;
+    $("legend-mine").hidden = !mine;
+    const series = [{ color: "var(--team)", avgs: teamData.avgs, primary: true }];
+    if (mine) series.push({ color: "var(--accent)", avgs: mine, primary: false });
+    drawProfile($("t-profile"), series);
+    drawProfileMobile($("t-profile-m"), series);
+
+    const box = $("t-dims");
+    box.innerHTML = "";
+    DIMS.forEach((d, i) => {
+      const avg = teamData.avgs[i];
+      const loc = locate(d.norm, avg);
+      const el = document.createElement("div");
+      el.className = "dim";
+      el.innerHTML = `
+        <div class="dim-top">
+          <div class="dim-name"><i style="background:${d.color}"></i>${d.name}</div>
+          <div class="dim-score">${fmt(avg)}</div>
+        </div>
+        <div class="pct-row">
+          <span>團隊百分位 <b>${pctText(loc)}</b></span>
+          ${mine ? `<span>你的分數 <b>${fmt(mine[i])}</b></span>` : ""}
+          ${showIdeal() ? `<span>作者理想 <b>第 ${d.idealPct} 百分位（${fmt(d.ideal)} 分）</b></span>` : ""}
+        </div>
+        <p class="dim-desc">${d.desc}</p>`;
+      box.appendChild(el);
+    });
+  }
+  $("btn-t-refresh").onclick = () => loadTeam();
+  $("btn-t-result").onclick = () => show("result");
+  $("btn-t-home").onclick = () => show("intro");
+  $("btn-t-download").onclick = () => runDownload($("btn-t-download"), $("t-status"), () => {
+    const legends = [["--team", "團隊平均", false]];
+    if (answeredCount() === QUESTIONS.length) legends.push(["--accent", "你的時間觀", false]);
+    if (showIdeal()) legends.push(["--ideal", "作者理想時間觀", true]);
+    return chartPng($("t-profile"), `ZTPI 團隊時間觀側寫（${teamData.count} 人）`, `統計日期 ${today()}`, legends);
+  }, "ZTPI團隊時間觀側寫.png");
+
+  $("btn-review").onclick = () => show("review");
+
+  // ===== 檢視作答：列出全部題目與答案 =====
+  function renderReview() {
+    const box = $("rv-list");
+    box.innerHTML = "";
+    QUESTIONS.forEach((q, i) => {
+      if (q.no === 1) {
+        const h = document.createElement("h3");
+        h.className = "rv-part";
+        h.textContent = q.part === 1 ? "第一部分 · 時間觀量表（56 題）" : "第二部分 · 超驗未來型時間觀（10 題）";
+        box.appendChild(h);
+      }
+      const a = state.answers[i];
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "rv-row" + (a == null ? " empty" : "");
+      b.innerHTML = `<span class="rv-no">${q.no}</span><span class="rv-text"></span><span class="rv-ans"><b>${a == null ? "–" : a}</b><span>${a == null ? "未作答" : LABELS[a - 1]}</span></span>`;
+      b.querySelector(".rv-text").textContent = q.text;
+      b.setAttribute("aria-label", `第 ${q.no} 題，${a == null ? "未作答" : a + " 分 " + LABELS[a - 1]}，點擊修改`);
+      b.onclick = () => { state.idx = i; show("quiz"); state.fromReview = true; save(); };
+      box.appendChild(b);
+    });
+    const done = answeredCount() === QUESTIONS.length;
+    document.querySelectorAll('[data-rv="result"]').forEach((el) => { el.disabled = !done; });
+  }
+  document.querySelectorAll('[data-rv="result"]').forEach((el) => { el.onclick = () => show("result"); });
+  document.querySelectorAll('[data-rv="home"]').forEach((el) => { el.onclick = () => show("intro"); });
+  $("btn-restart").onclick = restart;
+  $("btn-result-home").onclick = () => show("intro");
+
+  // 每次打開網頁都先到首頁，由首頁按鈕決定查看結果或繼續作答
+  show("intro");
+})();
+</script>
+</body>
+</html>
