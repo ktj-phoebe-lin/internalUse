@@ -224,6 +224,10 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .dim-gap { font-size: 13px; }
 .top-pill { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-weight: 500; margin-left: 6px; }
 .copy-status { font-size: 13px; color: var(--muted); }
+.disclaimer { font-size: 12px; color: var(--muted); margin-top: -12px; }
+.level-pill { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--ink); font-weight: 500; margin-left: 6px; }
+.level-pill.hi, .level-pill.lo { border-color: currentColor; }
+.dim-read { font-size: 15px; color: var(--ink); }
 #copy-fallback { width: 100%; min-height: 160px; font: 13px/1.6 var(--font-num); background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
 
 @media (max-width: 520px) {
@@ -342,6 +346,8 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
         <span class="legend-ideal"><span class="dot ideal"></span><span class="sw dash"></span>作者理想時間觀</span>
       </div>
     </div>
+    <h3>各向度分析</h3>
+    <p class="disclaimer">依你在一般人常模中的百分位高低做的一般性描述，不是心理診斷。</p>
     <div class="dims" id="r-dims"></div>
     <div class="row">
       <button class="btn primary" id="btn-download" type="button">下載結果圖</button>
@@ -513,6 +519,36 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
       items: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
       desc: "相信肉體死亡之後仍有未來，例如靈魂、來世或精神的延續。" }
   ];
+  // ===== 依百分位的分析文字 =====
+  // 等級：很高 ≥90、偏高 ≥70、中等、偏低 ≤30、很低 ≤10；說明文字用 hi / mid / lo 三段
+  function level(pct) {
+    pct = Math.round(pct); // 和畫面上顯示的百分位一致
+    if (pct >= 90) return { key: "hi", label: "很高" };
+    if (pct >= 70) return { key: "hi", label: "偏高" };
+    if (pct > 30) return { key: "mid", label: "中等" };
+    if (pct > 10) return { key: "lo", label: "偏低" };
+    return { key: "lo", label: "很低" };
+  }
+  const READINGS = {
+    pn: { hi: "你比較偏向記得過去的遺憾和不愉快，往事比較容易影響你現在的心情。",
+          mid: "你在這方面和多數人差不多：記得過去的挫折，但大多不會被困住。",
+          lo: "你比較偏向放下過去的不愉快，很少反覆想著已經發生的事。" },
+    pp: { hi: "你比較偏向用溫暖、懷舊的眼光看過去，美好的回憶常是你的力量來源。",
+          mid: "你在這方面和多數人差不多：對過去有好有壞的感受。",
+          lo: "你比較少從過去的回憶得到溫暖，不太常懷舊。" },
+    pf: { hi: "你比較偏向認為事情由命運或外力決定，自己能掌控的不多。",
+          mid: "你在這方面和多數人差不多：承認有些事由不得人，但大致相信努力有用。",
+          lo: "你比較偏向相信人生掌握在自己手中，很少把結果歸給命運。" },
+    ph: { hi: "你比較偏向活在當下，喜歡樂趣、刺激和新鮮感。",
+          mid: "你在這方面和多數人差不多：能享受當下，也不至於只顧眼前。",
+          lo: "你比較少為了好玩而做事，不太追求當下的樂趣和刺激。" },
+    fu: { hi: "你比較偏向看重未來，重視目標和規劃，願意為長遠的回報先忍耐。",
+          mid: "你在這方面和多數人差不多：會為未來做準備，但不會規劃得特別多。",
+          lo: "你比較少事先規劃，也不太為長遠目標延後享樂，常常隨情況調整。" },
+    tf: { hi: "你比較偏向相信生命在死後仍有延續，例如靈魂或來世。",
+          mid: "你在這方面和多數人差不多：對死後是否還有未來，抱持部分相信或保留。",
+          lo: "你比較偏向不相信死後還有未來，重視的是這一生。" }
+  };
   const LABELS = ["完全不是", "不太是", "介於中間", "有點是", "完全是"];
 
   // ===== 常模：時間觀側寫計分表（資料日期 2012-09-17）=====
@@ -736,11 +772,12 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     res.forEach((r) => {
       const g = r.gap;
       const gapText = Math.abs(g) < 5 ? "與作者理想位置相當" : (g > 0 ? `比作者理想高 ${Math.round(g)} 個百分位` : `比作者理想低 ${Math.round(-g)} 個百分位`);
+      const lv = level(r.loc.pct);
       const el = document.createElement("div");
       el.className = "dim";
       el.innerHTML = `
         <div class="dim-top">
-          <div class="dim-name"><i style="background:${r.color}"></i>${r.name}${r === top ? '<span class="top-pill">最突出</span>' : ""}</div>
+          <div class="dim-name"><i style="background:${r.color}"></i>${r.name}<span class="level-pill ${lv.key}" style="color:${lv.key === "mid" ? "var(--ink)" : r.color}">${lv.label}</span>${r === top ? '<span class="top-pill">最突出</span>' : ""}</div>
           <div class="dim-score">${fmt(r.avg)}</div>
         </div>
         <div class="pct-row">
@@ -748,7 +785,8 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
           ${ideal ? `<span>作者理想 <b>第 ${r.idealPct} 百分位（${fmt(r.ideal)} 分）</b></span>
           <span>${gapText}</span>` : ""}
         </div>
-        <p class="dim-desc">${r.desc}</p>
+        <p class="dim-read">${READINGS[r.id][lv.key]}</p>
+        <p class="dim-desc">這個向度測的是：${r.desc}</p>
         <p class="dim-gap num">總分 ${r.sum} ÷ ${r.items.length} 題 = ${fmt(r.avg)}</p>`;
       box.appendChild(el);
     });
