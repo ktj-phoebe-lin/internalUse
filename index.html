@@ -151,12 +151,23 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .legend .dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
 .legend .dot.you { background: var(--accent); }
 .legend .dot.ideal { background: var(--ideal); }
-.switch { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; font-size: 15px; justify-self: start; user-select: none; }
+.switch {
+  position: relative; display: inline-flex; align-items: center; gap: 12px; cursor: pointer;
+  font-size: 16px; font-weight: 700; justify-self: start; user-select: none;
+  padding: 10px 16px 10px 12px; border: 1.5px solid var(--line); border-radius: 999px; background: var(--surface);
+  -webkit-tap-highlight-color: transparent;
+}
+@media (hover: hover) { .switch:hover { border-color: var(--ideal); } }
+.switch:has(input:checked) { border-color: var(--ideal); }
 .switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
-.switch .knob { position: relative; width: 42px; height: 24px; border-radius: 12px; background: var(--line); transition: background .2s; flex: none; }
-.switch .knob::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: var(--surface); box-shadow: 0 1px 2px rgba(0,0,0,.25); transition: transform .2s; }
+.switch .knob { position: relative; width: 52px; height: 30px; border-radius: 15px; background: var(--muted); transition: background .2s; flex: none; }
+.switch .knob::after { content: ""; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #FFFFFF; box-shadow: 0 1px 3px rgba(0,0,0,.35); transition: transform .2s; }
 .switch input:checked + .knob { background: var(--ideal); }
-.switch input:checked + .knob::after { transform: translateX(18px); }
+.switch input:checked + .knob::after { transform: translateX(22px); }
+.switch .state { font-family: var(--font-num); font-size: 13px; font-weight: 500; color: var(--muted); min-width: 2.2em; }
+.switch input:checked ~ .state { color: var(--ideal); }
+.switch .state::after { content: "關閉"; }
+.switch input:checked ~ .state::after { content: "開啟"; }
 .switch input:focus-visible + .knob { outline: 3px solid var(--accent); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { .switch .knob, .switch .knob::after { transition: none; } }
 /* 檢視作答列表 */
@@ -280,22 +291,6 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
       <h2 id="r-title"></h2>
       <p class="lede" id="r-summary"></p>
     </div>
-    <label class="switch" for="toggle-ideal">
-      <input type="checkbox" class="toggle-ideal" id="toggle-ideal">
-      <span class="knob" aria-hidden="true"></span>
-      <span>顯示作者理想時間觀的比較</span>
-    </label>
-    <div class="chart-wrap">
-      <div class="chart-scroll">
-        <svg id="profile" viewBox="0 0 800 700" role="img" aria-label="時間觀側寫計分表：六個向度的分數與百分位"></svg>
-      </div>
-      <svg id="profile-m" class="profile-m" viewBox="0 0 360 560" role="img" aria-label="時間觀側寫計分表（直式）：六個向度的分數與百分位"></svg>
-      <div class="legend">
-        <span><span class="dot you"></span><span class="sw"></span>你的時間觀</span>
-        <span class="legend-ideal"><span class="dot ideal"></span><span class="sw dash"></span>作者理想時間觀</span>
-      </div>
-    </div>
-    <div class="dims" id="r-dims"></div>
     <div class="submit-box" id="submit-box" hidden>
       <h3>送出到團隊統計</h3>
       <p class="note">只會送出 6 個向度的平均分數和你的名稱，不會送出每一題的答案。同一個瀏覽器重新送出，會取代你上次的結果。</p>
@@ -309,6 +304,23 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
       </div>
       <p class="note" id="submit-status" aria-live="polite"></p>
     </div>
+    <label class="switch" for="toggle-ideal">
+      <input type="checkbox" class="toggle-ideal" id="toggle-ideal">
+      <span class="knob" aria-hidden="true"></span>
+      <span>顯示作者理想時間觀的比較</span>
+      <span class="state" aria-hidden="true"></span>
+    </label>
+    <div class="chart-wrap">
+      <div class="chart-scroll">
+        <svg id="profile" viewBox="0 0 800 700" role="img" aria-label="時間觀側寫計分表：六個向度的分數與百分位"></svg>
+      </div>
+      <svg id="profile-m" class="profile-m" viewBox="0 0 360 560" role="img" aria-label="時間觀側寫計分表（直式）：六個向度的分數與百分位"></svg>
+      <div class="legend">
+        <span><span class="dot you"></span><span class="sw"></span>你的時間觀</span>
+        <span class="legend-ideal"><span class="dot ideal"></span><span class="sw dash"></span>作者理想時間觀</span>
+      </div>
+    </div>
+    <div class="dims" id="r-dims"></div>
     <div class="row">
       <button class="btn primary" id="btn-download" type="button">下載結果圖</button>
       <button class="btn" id="btn-copy" type="button">複製結果文字</button>
@@ -348,6 +360,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
         <input type="checkbox" class="toggle-ideal" id="toggle-ideal-t">
         <span class="knob" aria-hidden="true"></span>
         <span>顯示作者理想時間觀的比較</span>
+      <span class="state" aria-hidden="true"></span>
       </label>
       <div class="chart-wrap">
         <div class="chart-scroll">
