@@ -281,7 +281,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
       <label for="name-input">你的名稱</label>
       <input class="text-input" id="name-input" type="text" maxlength="20" autocomplete="nickname" placeholder="例如：王小明">
       <span class="err" id="name-error" aria-live="polite"></span>
-      <span class="note" id="name-note">名稱會跟分數一起送到團隊統計的試算表。團隊統計頁只顯示平均和人數，不會顯示名字。</span>
+      <span class="note" id="name-note">作答完成後，名稱和 6 個向度的分數會自動送到團隊統計的試算表。團隊統計頁只顯示平均和人數，不會顯示名字。</span>
     </div>
     <div class="row" id="intro-actions"></div>
   </section>
@@ -319,7 +319,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     </div>
     <div class="submit-box" id="submit-box" hidden>
       <h3 id="submit-title">送出到團隊統計</h3>
-      <p class="note only-form">只會送出 6 個向度的平均分數和你的名稱，不會送出每一題的答案。同一個瀏覽器重新送出，會取代你上次的結果。</p>
+      <p class="note only-form">看到結果時會自動送出 6 個向度的平均分數和你的名稱，不會送出每一題的答案。同一個瀏覽器重新送出，會取代你上次的結果。</p>
       <div class="field only-form">
         <label for="name-result">名稱</label>
         <input class="text-input" id="name-result" type="text" maxlength="20" autocomplete="nickname">
@@ -793,6 +793,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
       box.appendChild(el);
     });
     renderSubmit();
+    autoSubmit();
   }
 
   // 時間觀側寫計分表：六條直軸，每列為一個百分位，軸旁標示該百分位的分數
@@ -979,7 +980,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   }, "ZTPI時間觀側寫.png");
 
   // ===== 名稱與瀏覽器識別 =====
-  const NAME_KEY = "ztpi-name", CID_KEY = "ztpi-client-id", SENT_KEY = "ztpi-sent-at";
+  const NAME_KEY = "ztpi-name", CID_KEY = "ztpi-client-id", SENT_KEY = "ztpi-sent-at", SENT_DATA_KEY = "ztpi-sent-data";
   const lsGet = (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } };
   const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
   function cleanName(s) {
@@ -1020,17 +1021,19 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     $("submit-title").textContent = done ? "已送出到團隊統計" : "送出到團隊統計";
     $("btn-team").classList.toggle("primary", !!done);
     $("btn-submit").textContent = sent ? "重新送出（會取代上次的結果）" : "送出到團隊統計";
-    $("submit-status").textContent = message || (done ? `已於 ${fmtTime(sent)} 以「${getName()}」送出。` : sent ? `這個瀏覽器已於 ${fmtTime(sent)} 送出過。` : "");
+    $("submit-status").textContent = message || (submitting ? "送出中…" : done ? `已於 ${fmtTime(sent)} 以「${getName()}」送出。` : sent ? `這個瀏覽器已於 ${fmtTime(sent)} 送出過。` : "");
   }
   var submitEditing = false; // var：renderSubmit 可能在這行執行前被呼叫
   $("btn-resend").onclick = () => { submitEditing = true; renderSubmit(); $("name-result").focus(); };
-  $("btn-submit").onclick = async () => {
-    const name = setName($("name-result").value);
-    $("name-result").value = name;
-    if (!name) { $("submit-status").textContent = "請先填寫名稱"; $("name-result").focus(); return; }
+  // 送出：自動送出與手動重送共用。成功後記下送出的名稱和分數，同樣的內容不會再自動送一次。
+  var submitting = false; // var：renderResult 可能在這行執行前被呼叫
+  async function sendResult(name, auto) {
+    if (submitting) return;
     const scores = score(state.answers).map((r) => Math.round(r.avg * 100) / 100);
-    const btn = $("btn-submit");
-    btn.disabled = true; $("submit-status").textContent = "送出中…";
+    const payload = JSON.stringify({ name, scores });
+    submitting = true;
+    $("btn-submit").disabled = true;
+    $("submit-status").textContent = "送出中…";
     try {
       const r = await fetch(API, {
         method: "POST",
@@ -1040,11 +1043,31 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
       const j = await r.json();
       if (!j || !j.ok) throw new Error((j && j.error) || "伺服器沒有接受這筆資料");
       lsSet(SENT_KEY, String(Date.now()));
+      lsSet(SENT_DATA_KEY, payload);
       submitEditing = false;
-      renderSubmit(`已送出，目前團隊共 ${j.count} 人。`);
+      renderSubmit(`${auto ? "已自動送出" : "已送出"}，目前團隊共 ${j.count} 人。`);
     } catch (e) {
-      renderSubmit(`送出失敗：${e.message || "網路錯誤"}。請檢查網路後再按一次。`);
-    } finally { btn.disabled = false; }
+      submitEditing = true; // 顯示名稱欄位和送出按鈕，讓使用者可以再試一次
+      renderSubmit(`送出失敗：${e.message || "網路錯誤"}。請檢查網路後按「送出到團隊統計」再試一次。`);
+    } finally {
+      submitting = false;
+      $("btn-submit").disabled = false;
+    }
+  }
+  // 看到結果時自動送出；這次的名稱和分數跟上次送出的一樣就不重送
+  function autoSubmit() {
+    if (!TEAM_ON || submitting || answeredCount() < QUESTIONS.length) return;
+    const name = getName();
+    if (!name) { submitEditing = true; renderSubmit("請填寫名稱後按「送出到團隊統計」。"); return; }
+    const scores = score(state.answers).map((r) => Math.round(r.avg * 100) / 100);
+    if (lsGet(SENT_DATA_KEY) === JSON.stringify({ name, scores })) return;
+    sendResult(name, true);
+  }
+  $("btn-submit").onclick = () => {
+    const name = setName($("name-result").value);
+    $("name-result").value = name;
+    if (!name) { $("submit-status").textContent = "請先填寫名稱"; $("name-result").focus(); return; }
+    sendResult(name);
   };
   $("btn-team").onclick = () => show("team");
   $("btn-scroll-result").onclick = () => {
